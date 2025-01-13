@@ -115,3 +115,136 @@ A browser-based SSH tool to access Linux instances securely without needing a lo
 - Optimize costs and maintain desired capacity across diverse instance types and availability zones.
 
 ---
+
+# AWS Networking and Storage Concepts
+
+## Private vs Public IP (IPv4)
+
+- **Private IP**: Assigned to instances for internal communication within a VPC. Not accessible from the internet.
+- **Public IP**: Assigned to instances for external communication. Accessible from the internet.
+
+### Private vs Public IP (IPv4) Fundamental Differences
+
+| Feature                | Private IP                     | Public IP                      |
+|------------------------|--------------------------------|--------------------------------|
+| Accessibility          | Internal network only         | Global internet access        |
+| Cost                   | Free                          | Free (temporarily assigned)   |
+| Persistence            | Retained on instance restart  | May change on restart         |
+
+## Elastic IPs
+
+- Static, public IPv4 addresses that can be reassigned to different instances within a region.
+- Useful for maintaining a consistent public IP address.
+
+## Placement Groups
+
+Placement Groups allow instances to be placed in specific configurations to optimize performance or fault tolerance.
+
+### Placement Groups: Cluster
+- Instances are placed within a single availability zone.
+- Low-latency, high-throughput workloads.
+
+### Placement Groups: Spread
+- Instances are spread across multiple hardware racks.
+- High availability and fault tolerance.
+
+### Placement Groups: Partition
+- Instances are divided into logical partitions.
+- Fault domains are isolated to reduce impact.
+
+## Elastic Network Interfaces (ENI)
+
+- Virtual network interfaces attached to EC2 instances.
+- Can be used to assign multiple IP addresses to an instance.
+
+## EC2 Hibernate
+
+- Pauses an instance and saves its RAM to the root volume.
+- On restart, the instance resumes from where it left off.
+
+### EC2 Hibernate: Good to Know
+- Supported on specific instance types.
+- Requires EBS volumes encrypted with AWS-managed or customer-managed keys.
+
+## EC2 – Instance Storage
+
+- Temporary block-level storage attached to an instance.
+- Data persists only during the instance lifecycle.
+
+## EBS Volume
+
+Elastic Block Store (EBS) provides durable, block-level storage for use with EC2 instances.
+
+### EBS – Delete on Termination Attribute
+
+- Determines whether an EBS volume is deleted when the associated instance is terminated.
+- Configurable during instance launch or afterwards.
+
+### EBS Snapshots
+
+- Point-in-time backups of EBS volumes stored in Amazon S3.
+- Used for disaster recovery and cloning volumes.
+
+## AMI Overview
+
+- Amazon Machine Images (AMI) provide templates for launching EC2 instances.
+- Includes OS, software, and configuration settings.
+
+### AMI Process (from an EC2 instance)
+
+1. Create an instance.
+2. Customize it with desired software and configurations.
+3. Create an AMI from the instance.
+
+## EC2 Instance Store
+
+- Provides temporary storage for instances.
+- Faster than EBS but non-persistent.
+
+## EBS Volume Types
+
+### EBS Volume Types Use Cases
+
+- **General Purpose SSD (gp3/gp2)**: Balanced performance and cost.
+- **Provisioned IOPS (PIOPS) SSD (io1/io2)**: High-performance applications.
+- **Hard Disk Drives (HDD)**: Cost-effective for infrequent or sequential access.
+
+### EBS Multi-Attach – io1/io2 Family
+
+- Allows multiple EC2 instances to attach to a single io1/io2 volume.
+- Use cases: Shared storage for clustered applications.
+
+### EBS Encryption
+
+- Encrypts data at rest, in transit, and in snapshots.
+
+#### Encryption: Encrypt an Unencrypted EBS Volume
+1. Create a snapshot of the volume.
+2. Copy the snapshot with encryption enabled.
+3. Create a new volume from the encrypted snapshot.
+4. Attach the new volume to the instance.
+
+## Amazon EFS – Elastic File System
+
+- Scalable file storage for use with EC2.
+- Automatically grows and shrinks as data is added or removed.
+
+### EFS – Performance & Storage Classes
+
+- **Performance Modes**: General Purpose and Max I/O.
+- **Storage Classes**: Standard and Infrequent Access.
+
+## EBS vs EFS – Elastic Block Storage
+
+- **EBS**: Block storage attached to a single instance.
+- **EFS**: Network file system accessible by multiple instances.
+
+## EBS vs EFS – Elastic File System
+
+| Feature             | EBS                            | EFS                            |
+|---------------------|--------------------------------|--------------------------------|
+| Accessibility       | Single instance               | Multiple instances            |
+| Storage Type        | Block storage                 | File system                   |
+| Use Cases           | Databases, boot volumes       | Shared storage, web serving   |
+
+---

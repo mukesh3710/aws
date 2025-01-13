@@ -100,3 +100,92 @@
 
 This architecture ensures scalability, security, and cost-efficiency, meeting the application's requirements effectively.
 
+---
+
+# AWS Serverless Solutions Architecture for MyBlog.com
+
+## Overview
+Designing a serverless architecture for MyBlog.com ensures scalability, cost-effectiveness, and high availability while addressing the following requirements:
+
+- Global scalability.
+- Rare blog updates but frequent reads.
+- A combination of static and dynamic content.
+- Caching for performance.
+- Welcome email for new subscribers.
+- Photo upload processing pipeline.
+
+---
+
+## Architecture Steps
+
+### 1. Static Website Hosting
+- **Service:** Amazon S3 with CloudFront
+- **Steps:**
+  1. Create an S3 bucket to host static files (e.g., HTML, CSS, JS, images).
+  2. Enable static website hosting in the bucket settings.
+  3. Use Amazon CloudFront as a CDN for global content delivery and caching.
+  4. Configure an SSL certificate with AWS Certificate Manager (ACM) for HTTPS.
+  5. Map `myblog.com` and `www.myblog.com` to CloudFront via Route 53.
+
+### 2. Dynamic REST API
+- **Service:** Amazon API Gateway and AWS Lambda
+- **Steps:**
+  1. Define REST API endpoints using Amazon API Gateway.
+  2. Implement backend logic using AWS Lambda functions.
+  3. Write Lambda functions in the desired runtime (e.g., Python, Node.js).
+  4. Connect API Gateway endpoints to Lambda functions.
+  5. Enable API Gateway caching to reduce Lambda invocation frequency.
+
+### 3. Database for Dynamic Content
+- **Service:** Amazon DynamoDB
+- **Steps:**
+  1. Create a DynamoDB table for blog metadata and user subscriptions.
+  2. Use primary keys and secondary indexes for efficient queries.
+  3. Leverage on-demand scaling for variable workloads.
+
+### 4. Caching
+- **Service:** Amazon CloudFront and AWS Lambda@Edge
+- **Steps:**
+  1. Enable CloudFront caching for static files and dynamic API responses.
+  2. Use Lambda@Edge to customize content delivery (e.g., language preferences).
+  3. Set appropriate cache-control headers to optimize caching behavior.
+
+### 5. Email Notifications
+- **Service:** Amazon Simple Email Service (SES)
+- **Steps:**
+  1. Configure SES for email sending.
+  2. Write a Lambda function triggered by new user subscriptions.
+  3. Use SES in the Lambda function to send a welcome email.
+  4. Add email templates for personalization.
+
+### 6. Photo Upload Processing
+- **Service:** Amazon S3, AWS Lambda, and Amazon Rekognition (optional)
+- **Steps:**
+  1. Create a separate S3 bucket for photo uploads.
+  2. Configure an S3 event trigger for Lambda when a photo is uploaded.
+  3. Write a Lambda function to:
+     - Resize the image using AWS SDK.
+     - Optionally, analyze the image using Amazon Rekognition.
+     - Store the processed image in a destination S3 bucket.
+  4. Use CloudFront to deliver processed images.
+
+### 7. Monitoring and Logging
+- **Service:** Amazon CloudWatch
+- **Steps:**
+  1. Enable CloudWatch logs for Lambda functions and API Gateway.
+  2. Set up CloudWatch alarms for critical metrics.
+  3. Use CloudWatch dashboards for real-time monitoring.
+
+### 8. Security
+- **Services:** AWS IAM, AWS WAF, and Cognito (optional)
+- **Steps:**
+  1. Use IAM roles for Lambda functions and S3 bucket access.
+  2. Enable AWS WAF to protect against common web exploits.
+  3. Implement AWS Cognito for user authentication (optional).
+
+---
+
+## Diagram
+Include a visual diagram illustrating the serverless architecture (e.g., S3 for hosting, API Gateway for REST API, Lambda for logic, etc.).
+
+

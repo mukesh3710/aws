@@ -134,3 +134,90 @@
   - Analyze cost and usage reports to optimize resource allocation.
 
 ---
+
+# Classic AWS Solutions Architecture for a Stateful Web App: "MyWordPress.com"
+
+## Overview
+**MyWordPress.com** aims to be a fully scalable WordPress website capable of handling traffic fluctuations, managing picture uploads, and securely storing user data and blog content in a MySQL database.
+
+---
+
+## 1. Setting Up the WordPress Application
+- **EC2 for WordPress Hosting**:
+  - Launch an EC2 instance with a web server (e.g., Apache or Nginx).
+  - Install WordPress using prebuilt images or manual installation.
+  - Configure the instance with security groups to allow HTTP (port 80) and HTTPS (port 443).
+
+---
+
+## 2. Database Setup for User Data and Blog Content
+- **RDS MySQL**:
+  - Launch an Amazon RDS MySQL instance to store WordPress data (user information, blog content, etc.).
+  - Enable Multi-AZ for high availability and automated backups.
+  - Optimize database performance with read replicas for read-heavy operations.
+- **Connection Configuration**:
+  - Update the `wp-config.php` file in WordPress to connect to the RDS MySQL instance.
+
+---
+
+## 3. Managing Picture Uploads
+- **Amazon S3 for Media Storage**:
+  - Create an S3 bucket to store WordPress media files (e.g., pictures, videos).
+  - Install and configure a WordPress plugin (e.g., WP Offload Media) to offload media uploads to S3.
+  - Use S3 bucket policies to secure access to media files.
+- **Amazon CloudFront**:
+  - Configure CloudFront as a content delivery network (CDN) for the S3 bucket.
+  - Enable caching and optimize media delivery for a better user experience.
+
+---
+
+## 4. Scaling the WordPress Application
+- **Load Balancer**:
+  - Use an Application Load Balancer (ALB) to distribute traffic across multiple WordPress EC2 instances.
+  - Configure health checks to ensure only healthy instances serve traffic.
+- **Auto Scaling Group (ASG)**:
+  - Create an ASG to automatically add or remove EC2 instances based on traffic patterns.
+  - Define scaling policies using metrics like CPU utilization and request count.
+
+---
+
+## 5. Ensuring Statelessness
+- **ElastiCache for Session Management**:
+  - Use Amazon ElastiCache (Redis or Memcached) to store session data for a stateless WordPress architecture.
+  - Ensure that session data is shared across all EC2 instances.
+- **Shared File System**:
+  - Use Amazon EFS (Elastic File System) for shared storage of WordPress files (e.g., themes, plugins).
+  - Mount the EFS file system to all WordPress EC2 instances.
+
+---
+
+## 6. Multi-AZ and Disaster Recovery
+- **Multi-AZ Setup**:
+  - Deploy EC2 instances in at least two Availability Zones for high availability.
+  - Ensure the RDS instance is configured for Multi-AZ deployment.
+- **Backup and Restore**:
+  - Enable automated backups for RDS.
+  - Use S3 Versioning to manage media file versions.
+
+---
+
+## 7. Security Best Practices
+- **IAM Roles**:
+  - Assign IAM roles to EC2 instances to grant them access to S3, CloudFront, and ElastiCache.
+- **Security Groups**:
+  - Restrict access to EC2, RDS, and EFS with tightly configured security groups.
+- **SSL/TLS**:
+  - Use ACM (AWS Certificate Manager) to manage SSL certificates for HTTPS traffic.
+
+---
+
+## 8. Monitoring and Cost Optimization
+- **Monitoring**:
+  - Use Amazon CloudWatch to monitor EC2, RDS, and S3 performance.
+  - Set up alarms for high CPU utilization, database latency, and S3 access errors.
+- **Cost Optimization**:
+  - Use Reserved Instances or Savings Plans for predictable workloads.
+  - Analyze AWS Cost Explorer reports to optimize resource usage.
+
+---
+

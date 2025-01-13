@@ -47,3 +47,90 @@
 - Test failover scenarios by terminating instances in one AZ and observing traffic distribution.
 
 ---
+
+# Classic AWS Solutions Architecture for a Stateful Web App: "MyClothes.com"
+
+## Overview
+**MyClothes.com** is an e-commerce website allowing users to buy clothes online. To ensure scalability, reliability, and a seamless user experience, we need to maintain horizontal scalability while preserving user data such as shopping carts and personal details.
+
+---
+
+## 1. Starting Simple with EC2 and a Database
+- **Application Deployment**:
+  - Launch a single EC2 instance to host the application.
+  - Use a framework or language suitable for e-commerce (e.g., Node.js, Java, or Python).
+  - Deploy the app code and connect it to a database.
+- **Database Setup**:
+  - Use Amazon RDS for a managed relational database.
+  - Store user data such as addresses and shopping cart details in RDS.
+  - Enable automated backups and Multi-AZ for high availability.
+- **Security**:
+  - Configure security groups to allow HTTP (port 80) and HTTPS (port 443) traffic to the EC2 instance.
+  - Allow the EC2 instance to communicate with RDS over the appropriate port (default: 3306 for MySQL).
+
+---
+
+## 2. Ensuring Statelessness
+- **Session Management**:
+  - Use Amazon ElastiCache (Redis or Memcached) to store session data.
+  - Store shopping cart details in ElastiCache to ensure sessions are stateless.
+- **Database for Persistent Data**:
+  - Keep user addresses and order history in RDS for long-term storage.
+- **Best Practices**:
+  - Design the app to fetch cart details and sessions from ElastiCache, not from the EC2 instance.
+
+---
+
+## 3. Scaling Horizontally
+- **Load Balancer Setup**:
+  - Deploy an Application Load Balancer (ALB) to distribute traffic across multiple EC2 instances.
+  - Configure ALB health checks to ensure only healthy instances receive traffic.
+- **Auto Scaling Group (ASG)**:
+  - Create an ASG to automatically add or remove EC2 instances based on traffic patterns.
+  - Define scaling policies using CloudWatch metrics like CPU utilization or request count.
+- **Data Consistency**:
+  - Ensure ElastiCache and RDS are accessible to all EC2 instances to maintain consistency.
+
+---
+
+## 4. Multi-AZ Deployment
+- **EC2 Deployment**:
+  - Deploy EC2 instances across at least two Availability Zones (AZs) for fault tolerance.
+  - Update the Auto Scaling Group to distribute instances evenly across AZs.
+- **RDS Multi-AZ**:
+  - Enable Multi-AZ on the RDS database to ensure high availability.
+  - Use Read Replicas for read-heavy operations, reducing the load on the primary database.
+
+---
+
+## 5. Scaling and Managing User Data
+- **Shopping Cart**:
+  - Store shopping cart sessions in ElastiCache for fast, in-memory access.
+  - Implement fallback mechanisms to persist carts to RDS if needed.
+- **User Details**:
+  - Keep all user details (e.g., addresses) in RDS.
+  - Ensure proper indexing to maintain query performance.
+- **High Availability**:
+  - Enable replication and failover for ElastiCache.
+
+---
+
+## 6. Reserving Capacity
+- **Capacity Planning**:
+  - Use Reserved Instances for EC2 to save costs on predictable workloads.
+  - Reserve RDS capacity for consistent performance and availability.
+- **Traffic Spikes**:
+  - Configure Auto Scaling policies for sudden traffic spikes (e.g., Black Friday sales).
+  - Use AWS WAF to protect against web attacks.
+
+---
+
+## 7. Monitoring and Optimization
+- **Monitoring Tools**:
+  - Use AWS CloudWatch to monitor EC2, RDS, and ElastiCache performance metrics.
+  - Set up alarms for resource utilization and latency.
+- **Cost Optimization**:
+  - Use Savings Plans for predictable usage patterns.
+  - Analyze cost and usage reports to optimize resource allocation.
+
+---
